@@ -111,7 +111,7 @@ func TestParseDIDUrl(t *testing.T) {
 	fragment1 := "#masterKey"
 	fragment2 := "#key-1"
 	fragment3 := "#key-256"
-	fragment4 := "#stdssss"
+	fragment4 := "#ss"
 	query := "?a=1"
 	didUrlString1 := "did:memo:ieuydhrndjcnfjs.sdfegreccc" + fragment1
 	didUrlString2 := "did:example:" + identify + fragment1

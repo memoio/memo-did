@@ -145,10 +145,10 @@ func ParseMemoDIDUrl(didUrl string) (*MemoDIDUrl, error) {
 	if did.Path != "" || did.Query != "" {
 		return nil, xerrors.Errorf("unsupported path and query in memo did")
 	}
-	if len(did.Fragment) < 4 {
+	if len(did.Fragment) <= 4 {
 		return nil, xerrors.Errorf("unsupportted fragment: %s", did.Fragment)
 	}
-	if did.Fragment != "masterKey" && (did.Fragment[:4] != "key-" || isNotNumber(did.Fragment[4:])) {
+	if did.Fragment != "masterKey" && (did.Fragment[:4] != "key-" || isNotPositiveNumber(did.Fragment[4:])) {
 		return nil, xerrors.Errorf("unsupportted fragment: %s", did.Fragment)
 	}
 	return &MemoDIDUrl{
@@ -218,7 +218,11 @@ func isNot32ByteHex(s string) bool {
 	return false
 }
 
-func isNotNumber(s string) bool {
+func isNotPositiveNumber(s string) bool {
+	if s == "" || s == "0" {
+		return true
+	}
+
 	for _, b := range s {
 		if b < '0' || b > '9' {
 			return true
