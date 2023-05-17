@@ -96,13 +96,13 @@ func TestRegisterDID(t *testing.T) {
 		return
 	}
 
-	publicKeyHex2, err := ToPublicKey("4bb551355d8eb5b22c28380e215a9d224b82f52f56c0f448e1b4e2f0a0053707")
-	if err != nil {
-		t.Error(err.Error())
-		return
-	}
+	// publicKeyHex2, err := ToPublicKey("4bb551355d8eb5b22c28380e215a9d224b82f52f56c0f448e1b4e2f0a0053707")
+	// if err != nil {
+	// 	t.Error(err.Error())
+	// 	return
+	// }
 
-	did, controller, err := NewMemoDIDController(privateKey, "dev")
+	controller, err := NewMemoDIDController(privateKey, "dev")
 	if err != nil {
 		t.Error(err.Error())
 		return
@@ -113,32 +113,20 @@ func TestRegisterDID(t *testing.T) {
 		return
 	}
 
-	err = controller.RegisterDID("325sssss")
-	if err == nil {
-		t.Error("RegisterDID should report an error, when the public key input is not hex")
-		return
-	}
-
-	err = controller.RegisterDID(publicKeyHex2)
-	if err == nil {
-		t.Error("RegisterDID should report an error, when the public key input can't match controller's address")
-		return
-	}
-
-	err = controller.RegisterDID(publicKeyHex)
+	err = controller.RegisterDID()
 	if err != nil {
 		t.Error(err.Error())
 		return
 	}
 
-	t.Log("resolving " + did.String())
-	document, err := resolver.Resolve(did.String())
+	t.Log("resolving " + controller.DID().String())
+	document, err := resolver.Resolve(controller.DID().String())
 	if err != nil {
 		t.Error(err.Error())
 		return
 	}
 
-	verificationMethod, err := genVerificationMethod(did, 0, nil, "EcdsaSecp256k1VerificationKey2019", publicKeyHex)
+	verificationMethod, err := genVerificationMethod(controller.DID(), 0, nil, "EcdsaSecp256k1VerificationKey2019", publicKeyHex)
 	if err != nil {
 		t.Error(err.Error())
 		return
@@ -146,7 +134,7 @@ func TestRegisterDID(t *testing.T) {
 
 	d := &MemoDIDDocument{
 		Context:            DefaultContext,
-		ID:                 *did,
+		ID:                 *controller.DID(),
 		VerificationMethod: []VerificationMethod{verificationMethod},
 	}
 
@@ -183,11 +171,12 @@ func TestBasic(t *testing.T) {
 
 	d := &MemoDIDDocument{}
 
-	did, controller, err := NewMemoDIDController(privateKey, "dev")
+	controller, err := NewMemoDIDController(privateKey, "dev")
 	if err != nil {
 		t.Error(err.Error())
 		return
 	}
+	did := controller.DID()
 	resolver, err := NewMemoDIDResolver("dev")
 	if err != nil {
 		t.Error(err.Error())
@@ -195,7 +184,7 @@ func TestBasic(t *testing.T) {
 	}
 
 	// register did(masterKey)
-	err = controller.RegisterDID(masterKey)
+	err = controller.RegisterDID()
 	if err != nil {
 		t.Error(err.Error())
 		return
@@ -542,17 +531,17 @@ func TestUpdateByController(t *testing.T) {
 	d2 := &MemoDIDDocument{}
 	d3 := &MemoDIDDocument{}
 
-	did1, controller1, err := NewMemoDIDController(privateKey1, "dev")
+	controller1, err := NewMemoDIDController(privateKey1, "dev")
 	if err != nil {
 		t.Error(err.Error())
 		return
 	}
-	did2, controller2, err := NewMemoDIDController(privateKey2, "dev")
+	controller2, err := NewMemoDIDController(privateKey2, "dev")
 	if err != nil {
 		t.Error(err.Error())
 		return
 	}
-	did3, controller3, err := NewMemoDIDController(privateKey3, "dev")
+	controller3, err := NewMemoDIDController(privateKey3, "dev")
 	if err != nil {
 		t.Error(err.Error())
 		return
@@ -563,19 +552,22 @@ func TestUpdateByController(t *testing.T) {
 		return
 	}
 
+	did1 := controller1.DID()
+	did2 := controller2.DID()
+	did3 := controller3.DID()
 	//
 	// register did
-	err = controller1.RegisterDID(masterKey1)
+	err = controller1.RegisterDID()
 	if err != nil {
 		t.Error(err.Error())
 		return
 	}
-	err = controller2.RegisterDID(masterKey2)
+	err = controller2.RegisterDID()
 	if err != nil {
 		t.Error(err.Error())
 		return
 	}
-	err = controller3.RegisterDID(masterKey3)
+	err = controller3.RegisterDID()
 	if err != nil {
 		t.Error(err.Error())
 		return
@@ -730,15 +722,15 @@ func TestUpdateByController(t *testing.T) {
 	}
 }
 
-// func TestGetSK(t *testing.T) {
-// 	privateKey, err := crypto.GenerateKey()
-// 	if err != nil {
-// 		t.Error(err.Error())
-// 		return
-// 	}
+func TestGetSK(t *testing.T) {
+	privateKey, err := crypto.GenerateKey()
+	if err != nil {
+		t.Error(err.Error())
+		return
+	}
 
-// 	t.Log(hex.EncodeToString(crypto.FromECDSA(privateKey)))
-// }
+	t.Log(hex.EncodeToString(crypto.FromECDSA(privateKey)))
+}
 
 func TestResolve(t *testing.T) {
 	resolver, err := NewMemoDIDResolver("dev")
@@ -771,7 +763,7 @@ func TestDerefrence(t *testing.T) {
 		return
 	}
 
-	_, publicKey, err := resolver.Derefrence("did:memo:bbe9144474d97a23cede89c8805ba9f5710f0fcc59162eff70c5579d2505e037#masterKey")
+	_, publicKey, err := resolver.Dereference("did:memo:bbe9144474d97a23cede89c8805ba9f5710f0fcc59162eff70c5579d2505e037#masterKey")
 	if err != nil {
 		t.Error(err.Error())
 		return

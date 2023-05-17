@@ -2,7 +2,7 @@ package memodid
 
 type DIDController interface {
 	// Create
-	RegisterDID(publicKeyHex string) error
+	RegisterDID() error
 
 	// Update
 	AddController(did MemoDID, controller MemoDID) error
@@ -21,5 +21,5 @@ type DIDController interface {
 type DIDResolver interface {
 	// Read
 	Resolve(didString string) (*MemoDIDDocument, error)
-	Derefrence(didUrlString string) (string, string, error)
+	Dereference(didUrlString string) (string, string, error)
 }

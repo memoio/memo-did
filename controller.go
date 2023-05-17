@@ -30,19 +30,20 @@ var (
 type MemoDIDController struct {
 	did           *MemoDID
 	endpoint      string
+	privateKey    *ecdsa.PrivateKey
 	didTransactor *bind.TransactOpts
 	proxyAddr     common.Address
 }
 
 var _ DIDController = &MemoDIDController{}
 
-func NewMemoDIDController(privateKey *ecdsa.PrivateKey, chain string) (*MemoDID, *MemoDIDController, error) {
+func NewMemoDIDController(privateKey *ecdsa.PrivateKey, chain string) (*MemoDIDController, error) {
 	did, err := CreatMemoDID(privateKey, chain)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	controller, err := NewMemoDIDControllerWithDID(privateKey, chain, did.String())
-	return did, controller, err
+	return controller, err
 }
 
 func NewMemoDIDControllerWithDID(privateKey *ecdsa.PrivateKey, chain, didString string) (*MemoDIDController, error) {
@@ -83,6 +84,7 @@ func NewMemoDIDControllerWithDID(privateKey *ecdsa.PrivateKey, chain, didString 
 	return &MemoDIDController{
 		did:           did,
 		endpoint:      endpoint,
+		privateKey:    privateKey,
 		didTransactor: auth,
 		proxyAddr:     proxyAddr,
 	}, err
@@ -117,7 +119,11 @@ func CreatMemoDID(privateKey *ecdsa.PrivateKey, chain string) (*MemoDID, error) 
 	}, nil
 }
 
-func (c *MemoDIDController) RegisterDID(publicKeyHex string) error {
+func (c *MemoDIDController) DID() *MemoDID {
+	return c.did
+}
+
+func (c *MemoDIDController) RegisterDID() error {
 	client, err := ethclient.DialContext(context.TODO(), c.endpoint)
 	if err != nil {
 		return err
@@ -129,10 +135,13 @@ func (c *MemoDIDController) RegisterDID(publicKeyHex string) error {
 		return err
 	}
 
-	publicKeyBytes, err := hex.DecodeString(publicKeyHex)
-	if err != nil {
-		return err
+	// Get public key from private key
+	publicKey := c.privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return xerrors.Errorf("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
 	}
+	publicKeyBytes := crypto.CompressPubkey(publicKeyECDSA)
 
 	tx, err := proxyIns.CreateDID(c.didTransactor, c.did.Identifier, "EcdsaSecp256k1VerificationKey2019", publicKeyBytes)
 	if err != nil {

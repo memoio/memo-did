@@ -22,6 +22,8 @@ type MemoDIDResolver struct {
 	accountAddr common.Address
 }
 
+var _ DIDResolver = &MemoDIDResolver{}
+
 func NewMemoDIDResolver(chain string) (*MemoDIDResolver, error) {
 	if chain == "" {
 		chain = com.DevChain
@@ -113,7 +115,7 @@ func (r *MemoDIDResolver) Resolve(didString string) (*MemoDIDDocument, error) {
 	}, nil
 }
 
-func (r *MemoDIDResolver) Derefrence(didUrlString string) (string, string, error) {
+func (r *MemoDIDResolver) Dereference(didUrlString string) (string, string, error) {
 	didUrl, err := ParseMemoDIDUrl(didUrlString)
 	if err != nil {
 		return "", "", err
