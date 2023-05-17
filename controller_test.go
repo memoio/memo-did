@@ -745,7 +745,7 @@ func TestResolve(t *testing.T) {
 		t.Error(err.Error())
 		return
 	}
-	t.Log(time.Now().Sub(start).Seconds())
+	t.Log(time.Since(start).Seconds())
 
 	documentBytes, err := json.MarshalIndent(document, "", "\t")
 	if err != nil {
