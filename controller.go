@@ -56,7 +56,7 @@ func NewMemoDIDControllerWithDID(privateKey *ecdsa.PrivateKey, chain, didString 
 
 	chainID, err := client.NetworkID(context.Background())
 	if err != nil {
-		chainID = big.NewInt(666)
+		chainID = big.NewInt(985)
 	}
 
 	// new instanceIns
@@ -78,7 +78,7 @@ func NewMemoDIDControllerWithDID(privateKey *ecdsa.PrivateKey, chain, didString 
 	}
 	auth.Value = big.NewInt(0)     // in wei
 	auth.GasLimit = uint64(300000) // in units
-	auth.GasPrice = big.NewInt(1000)
+	// auth.GasPrice = big.NewInt(1000)
 
 	did, err := ParseMemoDID(didString)
 	return &MemoDIDController{
@@ -201,7 +201,7 @@ func (c *MemoDIDController) AddVerificationMethod(did MemoDID, vtype string, con
 
 	publicKey := proxy.IAccountDidPublicKey{
 		MethodType:  vtype,
-		Controller:  controller.String(),
+		Controller:  controller.Identifier,
 		PubKeyData:  publicKeyBytes,
 		Deactivated: false,
 	}
@@ -283,7 +283,7 @@ func (c *MemoDIDController) AddRelationShip(did MemoDID, relationType int, didUr
 	case AssertionMethod:
 		tx, err = proxyIns.AddAssertion(c.didTransactor, did.Identifier, c.did.Identifier, didUrl.String())
 	case CapabilityDelegation:
-		tx, err = proxyIns.AddDelegation(c.didTransactor, did.Identifier, c.did.Identifier, didUrl.String(), big.NewInt(expireTime))
+		tx, err = proxyIns.AddDelegation(c.didTransactor, did.Identifier, c.did.Identifier, didUrl.String(), big.NewInt(expireTime+time.Now().Unix()))
 	case Recovery:
 		tx, err = proxyIns.AddRecovery(c.didTransactor, did.Identifier, c.did.Identifier, didUrl.String())
 	default:

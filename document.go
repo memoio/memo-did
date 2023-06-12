@@ -26,7 +26,10 @@ type VerificationMethod struct {
 func FromSolityData(did *MemoDID, methodIndex int64, method *proxy.IAccountDidPublicKey) (*VerificationMethod, error) {
 	if method.Controller == "" {
 		method.Controller = "did:memo:0000000000000000000000000000000000000000000000000000000000000000"
+	} else {
+		method.Controller = "did:memo:" + method.Controller
 	}
+
 	controller, err := ParseMemoDID(method.Controller)
 	if err != nil {
 		return nil, err

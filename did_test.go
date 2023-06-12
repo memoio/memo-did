@@ -4,7 +4,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"testing"
+	"time"
 
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -157,70 +159,12 @@ func TestParseDIDUrl(t *testing.T) {
 	}
 }
 
-// func TestRegisterDID(t *testing.T) {
-// 	did, err := NewMemoDIDController()
-// 	if err != nil {
-// 		t.Errorf("Can't create Memo did: %s", err.Error())
-// 		return
-// 	}
+func TestHex(t *testing.T) {
+	num, _ := hexutil.DecodeBig("0x59d8")
 
-// 	err = did.RegisteDID()
-// 	if err != nil {
-// 		t.Errorf("Can't regist Memo did: %s", err.Error())
-// 		return
-// 	}
+	t.Log(num)
+}
 
-// 	document, err := ResolveDID(did.String())
-// 	if err != nil {
-// 		t.Errorf(err.Error())
-// 		return
-// 	}
-// 	data, err := json.MarshalIndent(document, "", "\t")
-// 	if err != nil {
-// 		t.Errorf("Can't Marshal did document: %s", err.Error())
-// 		return
-// 	}
-// 	t.Log(string(data))
-// 	return
-// }
-
-// func TestAddDelegation(t *testing.T) {
-// 	did, err := NewMemoDIDController()
-// 	if err != nil {
-// 		t.Errorf("Can't create Memo did: %s", err.Error())
-// 		return
-// 	}
-
-// 	t.Log(did)
-
-// 	err = did.RegisteDID()
-// 	if err != nil {
-// 		t.Errorf("Can't regist Memo did: %s", err.Error())
-// 	}
-
-// 	_, pk, err := createKeyPair()
-// 	if err != nil {
-// 		t.Errorf("Can't create key pair: %s", err.Error())
-// 		return
-// 	}
-
-// 	t.Log(pk)
-
-// 	_, err = did.AddDelegation(pk, Authentication)
-// 	if err != nil {
-// 		t.Errorf("Can't add delegation: %s", err.Error())
-// 	}
-
-// 	document, err := ResolveDID(did.String())
-// 	if err != nil {
-// 		t.Errorf(err.Error())
-// 		return
-// 	}
-// 	data, err := json.MarshalIndent(document, "", "\t")
-// 	if err != nil {
-// 		t.Errorf("Can't Marshal did document: %s", err.Error())
-// 		return
-// 	}
-// 	t.Log(string(data))
-// 	return
-// }
+func TestUnix(t *testing.T) {
+	t.Log(time.Now().Unix())
+}

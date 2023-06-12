@@ -1,12 +1,17 @@
 package memodid
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"encoding/hex"
 	"encoding/json"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
+	com "github.com/memoio/contractsv2/common"
+	inst "github.com/memoio/contractsv2/go_contracts/instance"
 	"golang.org/x/xerrors"
 )
 
@@ -81,4 +86,33 @@ func TestDocumentMarshal(t *testing.T) {
 	// 	t.Error("")
 	// 	return
 	// }
+}
+
+func TestGetAddress(t *testing.T) {
+	instanceAddr, endpoint := com.GetInsEndPointByChain("dev")
+
+	client, err := ethclient.DialContext(context.TODO(), endpoint)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	// new instanceIns
+	instanceIns, err := inst.NewInstance(instanceAddr, client)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	accountDid, err := instanceIns.Instances(&bind.CallOpts{}, com.TypeAccountDid)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	t.Log(accountDid)
+
+	proxyAddr, err := instanceIns.Instances(&bind.CallOpts{}, com.TypeDidProxy)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	t.Log(proxyAddr)
 }

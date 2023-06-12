@@ -61,6 +61,11 @@ func ToPublicKeys(privateKeyHex []string) ([]*ecdsa.PrivateKey, []string, error)
 	return sks, pks, nil
 }
 
+func TestGetPK(t *testing.T) {
+	_, pks, _ := ToPublicKeys([]string{globalPrivateKey1, globalPrivateKey2, globalPrivateKey3})
+	t.Log(pks)
+}
+
 func genVerificationMethod(did *MemoDID, methodIndex int64, controller *MemoDID, vtype, publicKeyHex string) (VerificationMethod, error) {
 	if controller == nil {
 		controller, _ = ParseMemoDID("did:memo:0000000000000000000000000000000000000000000000000000000000000000")
@@ -307,13 +312,13 @@ func TestBasic(t *testing.T) {
 
 	//
 	// add delegation(key-1, key-2)
-	err = controller.AddRelationShip(*did, CapabilityDelegation, document.VerificationMethod[1].ID, time.Now().Add(7*24*time.Hour).Unix())
+	err = controller.AddRelationShip(*did, CapabilityDelegation, document.VerificationMethod[1].ID, 7*24*int64(time.Hour.Seconds()))
 	if err != nil {
 		t.Error(err.Error())
 		return
 	}
 
-	err = controller.AddRelationShip(*did, CapabilityDelegation, document.VerificationMethod[2].ID, time.Now().Add(1*time.Minute).Unix())
+	err = controller.AddRelationShip(*did, CapabilityDelegation, document.VerificationMethod[2].ID, int64(time.Minute.Seconds()))
 	if err != nil {
 		t.Error(err.Error())
 		return
@@ -499,11 +504,11 @@ func TestAAA(t *testing.T) {
 		t.Error(err.Error())
 		return
 	}
-	t.Log(crypto.PubkeyToAddress(sks[0].PublicKey))
-	t.Log(crypto.PubkeyToAddress(sks[1].PublicKey))
-	t.Log(crypto.PubkeyToAddress(sks[2].PublicKey))
-	t.Log(crypto.PubkeyToAddress(sks[3].PublicKey))
-	t.Log(crypto.PubkeyToAddress(sks[4].PublicKey))
+	t.Log(crypto.PubkeyToAddress(sks[0].PublicKey).Hex())
+	t.Log(crypto.PubkeyToAddress(sks[1].PublicKey).Hex())
+	t.Log(crypto.PubkeyToAddress(sks[2].PublicKey).Hex())
+	t.Log(crypto.PubkeyToAddress(sks[3].PublicKey).Hex())
+	t.Log(crypto.PubkeyToAddress(sks[4].PublicKey).Hex())
 }
 
 func TestUpdateByController(t *testing.T) {
@@ -692,7 +697,7 @@ func TestUpdateByController(t *testing.T) {
 	}
 	d2.AssertionMethod = append(d2.AssertionMethod, d2.VerificationMethod[1].ID)
 
-	err = controller3.AddRelationShip(*did2, CapabilityDelegation, document2.VerificationMethod[1].ID, time.Now().Add(24*time.Hour).Unix())
+	err = controller3.AddRelationShip(*did2, CapabilityDelegation, document2.VerificationMethod[1].ID, 24*int64(time.Hour.Seconds()))
 	if err != nil {
 		t.Error(err.Error())
 		return
@@ -740,7 +745,7 @@ func TestResolve(t *testing.T) {
 	}
 
 	start := time.Now()
-	document, err := resolver.Resolve("did:memo:a467507d0095681bcb0fa5301d7f4ed6212f3efeaa6160f8619c8f94206664ce")
+	document, err := resolver.Resolve("did:memo:deb3d9ca231caca8c03edad42d03c4ccb7ddd8eae81373267c3b484cc62a8d13")
 	if err != nil {
 		t.Error(err.Error())
 		return
