@@ -11,7 +11,7 @@ A golang package to work with memo DIDs
 
 ### 1.Create
 
-Create/Register DID needs to interactive with memo chain.
+创建/注册DID需要和memo链进行交互，因此需要
 
 ```go
 package main
@@ -46,7 +46,7 @@ func main() {
 
 ### 2.Update
 
-Update the DID document, mainly for the controller attribute, verificationMethod attribute, authentication attribute, assertionMethod attribute, capabilityDelegation attribute and recovery attribute in the DID document. You can view the [interface file](./didstore.go) for a detailed interface description.
+更新DID文档，主要是针对DID文档中的controller属性，verificationMethod属性，authentication属性，assertionMethod属性，capabilityDelegation属性以及recovery属性进行更新。可以查看[接口文件](./didstore.go)查看详细的接口描述。
 
 ```go
 // Get the controller from step 1
@@ -63,7 +63,7 @@ if err != nil {
 
 ### 3.Delete
 
-Deleting a DID and DID documents is irreversible and the corresponding DID is permanently invalid.
+删除DID以及DID文档，删除不可恢复且对应的DID永久无效。
 
 ```go
 // Get the controller from step 1
@@ -78,7 +78,7 @@ if err != nil {
 
 ### 4.Resolve
 
-Parsing DID will parse the complete DID document based on the DID string.
+解析DID会根据DID字符串解析出完整的DID文档。
 
 ```go
 // Get the controller from step 1
@@ -112,7 +112,7 @@ fmt.Println(string(data))
 
 ### 5.Dereference
 
-Dereference the VerificationMethod ID to obtain the public key and verification method type.
+解引用通过VerificationMethod的ID解析得到公钥以及验证方法类型。
 
 ```go
 // Get the controller from step 1
@@ -132,8 +132,9 @@ if err != nil {
 
 ## Test
 
-Run the following command to test.
+运行下列命令测试
 
 ```bash
 go test -v
 ```
+

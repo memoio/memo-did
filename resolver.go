@@ -155,7 +155,7 @@ func queryAllController(accountIns *proxy.IAccountDid, did *MemoDID) ([]MemoDID,
 		// 	return nil, xerrors.Errorf("Got wrong did when query controller")
 		// }
 
-		// 目前controller只支持did:memo，因此可以无需保存前缀
+		// controller only supports did:memo currently, so no need to save prefix
 		controller, err := ParseMemoDID("did:memo:" + controllerIter.Event.Controller)
 		if err != nil {
 			return nil, err
